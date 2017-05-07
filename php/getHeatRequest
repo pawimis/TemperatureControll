@@ -1,0 +1,23 @@
+<?php
+require_once('vars.php');
+    $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
+           or die('No SQL server connection');
+if($_SERVER['REQUEST_METHOD'] == 'POST'){	
+	$query = "SELECT LAST(TEMPERATURE,TIME) FROM TemperatureDatabase";
+	$resultHeatOrder = mysql_fetch_assoc(mysql_query($query));
+	$temperature =  $resultHeatOrder['TEMPERATURE'];
+	echo $resultHeatOrder['TIME'];
+	echo $temperature;
+
+	$query = "SELECT TEMPERATURE FROM PlanDatabase where HOUR <= CURTIME() ORDER BY HOUR DESC LIMIT 1";
+	$resultPlan = mysql_fetch_assoc(mysql_query($query));
+	$plannedTemperature = $resultPlan['TEMPERATURE'];
+	if($plannedTemperature < $temperature){
+		echo '1';	
+	}else{ 
+		echo '0';
+	}
+	mysqli_close($dbc);
+	exit; 
+}
+?>
