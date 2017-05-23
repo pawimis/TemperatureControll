@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/activity_setup_ssid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="SSID" />
+
+        <EditText
+            android:id="@+id/activity_setup_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textWebPassword" />
+
+        <EditText
+            android:id="@+id/activity_setup_room_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="room name" />
+
+        <EditText
+            android:id="@+id/activity_setup_controller_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="controller name" />
+
+        <Button
+            android:id="@+id/activity_setup_button_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send data" />
+    </LinearLayout>
+</ScrollView>

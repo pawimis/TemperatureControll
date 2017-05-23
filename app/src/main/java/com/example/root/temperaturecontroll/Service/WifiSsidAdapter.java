@@ -10,16 +10,11 @@ import android.widget.TextView;
 
 import com.example.root.temperaturecontroll.R;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
-/**
- * Created by root on 02.04.17.
- */
 
 public class WifiSsidAdapter extends RecyclerView.Adapter<WifiSsidAdapter.MyViewHolder>{
-    List<ScanResult> scanList;
+    private List<ScanResult> scanList;
     public WifiSsidAdapter(List<ScanResult> scanList){
         this.scanList = scanList;
     }
@@ -45,11 +40,11 @@ public class WifiSsidAdapter extends RecyclerView.Adapter<WifiSsidAdapter.MyView
         return scanList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView name;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
                 super(itemView);
                 name = (TextView) itemView.findViewById(R.id.wifi_list_row_name);
             }

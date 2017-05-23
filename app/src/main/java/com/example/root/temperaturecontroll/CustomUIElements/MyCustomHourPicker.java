@@ -1,4 +1,4 @@
-package com.example.root.temperaturecontroll.Activity;
+package com.example.root.temperaturecontroll.CustomUIElements;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -50,20 +50,9 @@ public class MyCustomHourPicker extends View{
         float x = event.getX();
         float y = event.getY();
         if(x > getWidth()-100  && y > 50 && y <getHeight()-50) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    Log.i("Touch", "Move");
-                    float place = y/(getHeight()-100);
-                    spot = (int) (24*place);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_DOWN:
-                    Log.i("Touch", "down");
-                    break;
-                case MotionEvent.ACTION_UP:
-                    Log.i("Touch", "up");
-                    break;
-            }
+            float place = y / (getHeight() - 100);
+            spot = (int) (24 * place);
+            invalidate();
         }
     }
     public int getSpot(){
@@ -83,8 +72,8 @@ public class MyCustomHourPicker extends View{
             canvas.drawRect(getWidth() - 40, currStartPoint, getWidth() - 20, currStartPoint + height, currPaint);
             if(i==spot){
                 Paint tempPaint = new Paint(textPaint);
-                tempPaint.setTextSize(60);
-                canvas.drawText(String.valueOf(i),getWidth()-90,currStartPoint+height/2,tempPaint);
+                tempPaint.setTextSize(90);
+                canvas.drawText(String.valueOf(i), getWidth() - 100, currStartPoint + height / 2, tempPaint);
             }else {
                 canvas.drawText(String.valueOf(i), getWidth() - 90, currStartPoint + height / 2, textPaint);
             }
@@ -94,7 +83,7 @@ public class MyCustomHourPicker extends View{
     }
 
     public void colorize(int red, int green, int blue) {
-        if(spot > 0) {
+        if (spot > 0 && spot < 25) {
             Log.i("spot",String.valueOf(spot));
             paintArrayList.get(spot-1).setARGB(255, red, green, blue);
             invalidate();

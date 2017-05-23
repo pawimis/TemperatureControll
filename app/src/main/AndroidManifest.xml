@@ -15,21 +15,17 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MenuActivity" />
         <activity android:name=".Activity.GraphActivity" />
         <activity android:name=".Activity.NewControlerActivity"></activity>
         <activity android:name=".Activity.TemperatureControlActivity"></activity>
-        <activity android:name=".Activity.WebActivity"></activity>
-        <activity android:name=".Activity.TestActivity">
-
-        </activity>
+        <activity android:name=".Activity.SetupActivity"></activity>
     </application>
 
 </manifest>

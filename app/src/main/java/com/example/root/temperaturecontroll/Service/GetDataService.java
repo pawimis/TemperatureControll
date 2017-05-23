@@ -1,7 +1,5 @@
 package com.example.root.temperaturecontroll.Service;
 
-import android.net.Uri;
-
 import com.example.root.temperaturecontroll.Variables;
 
 import java.io.BufferedReader;
@@ -18,7 +16,8 @@ import java.net.URL;
 public class GetDataService {
     private static final String TAG = "GetDataService";
     private static final String FAILURE = "Failure";
-    public static String sendRequest(String urlAddress, String searchQuery) throws IOException {
+
+    public static String sendRequest(String urlAddress) throws IOException {
         HttpURLConnection httpUrlConnection;
         URL url;
         try{
@@ -37,12 +36,9 @@ public class GetDataService {
             httpUrlConnection.setDoOutput(true);
 
             // add parameter to our above url
-            Uri.Builder builder = new Uri.Builder().appendQueryParameter("searchQuery", searchQuery);
-            String query = builder.build().getEncodedQuery();
 
             OutputStream os = httpUrlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(query);
             writer.flush();
             writer.close();
             os.close();

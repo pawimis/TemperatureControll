@@ -3,18 +3,14 @@ package com.example.root.temperaturecontroll.Database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 
 public class DbPlan extends SQLiteOpenHelper {
@@ -29,17 +25,10 @@ public class DbPlan extends SQLiteOpenHelper {
     private static final DateFormat timeDateFormat = new SimpleDateFormat("kk:mm");
     private static final DateFormat dateDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
     public DbPlan(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        createDatabase(db);
-
-
-    }
     private void createDatabase(SQLiteDatabase db) {
         if(db==null){
             db = this.getReadableDatabase();
@@ -51,6 +40,11 @@ public class DbPlan extends SQLiteOpenHelper {
                 + KEY_SET_DATE + " DATE, "
                 + KEY_SET_HOUR + " TIME);";
         db.execSQL(CREATE_TABLE);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        createDatabase(db);
     }
 
     @Override
@@ -75,7 +69,8 @@ public class DbPlan extends SQLiteOpenHelper {
         cursor.close();
         return true;
     }
-    public void updateRecord(String hour, String temperature ){
+
+    private void updateRecord(String hour, String temperature) {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_TEMPERATURE,temperature);
@@ -85,6 +80,15 @@ public class DbPlan extends SQLiteOpenHelper {
         db.close();
         Log.i("Update",hour+"/"+temperature);
 
+    }
+
+    public boolean setAll(String temperature) {
+        int i = 1;
+        while (i < 25) {
+            insertRecord(String.valueOf(i), temperature);
+            i++;
+        }
+        return true;
     }
     public String getRecord(String hour){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -109,9 +113,5 @@ public class DbPlan extends SQLiteOpenHelper {
         }
         cursor.close();
         return arrayList;
-    }
-    public int numberOfRows(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        return (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME);
     }
 }

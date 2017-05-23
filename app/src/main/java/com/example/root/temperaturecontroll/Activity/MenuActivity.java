@@ -3,8 +3,8 @@ package com.example.root.temperaturecontroll.Activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,94 +22,76 @@ import com.example.root.temperaturecontroll.Variables;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MenuActivity extends Activity {
     Button graph;
-    Button clear;
-    Button refresh;
     Button control;
     Button addNew;
-    Button test;
+    Button save;
+    TextView current;
+    TextView average;
+    TextView averageToday;
+    TextView isOn;
     ProgressDialog progressDialog;
     DbTemperature dbTemperature;
     DbPlan dbPlan;
-    TextView minTemp;
-    TextView maxTemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        updateDatabase();
         dbTemperature = new DbTemperature(getApplicationContext());
         dbPlan = new DbPlan(getApplicationContext());
-        minTemp = (TextView) findViewById(R.id.activity_menu_text_temp_min);
-        maxTemp = (TextView) findViewById(R.id.activity_menu_text_temp_max);
-
-        test = (Button) findViewById(R.id.activity_menu_button_test);
-        test.setOnClickListener(new View.OnClickListener() {
+        initializeInterfaceElements();
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MenuActivity.this,TestActivity.class);
-                startActivity(i);
+                updateDatabase();
             }
         });
-        graph = (Button) findViewById(R.id.activity_menu_button_show_graph);
         graph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showGraph();
             }
         });
-        clear = (Button) findViewById(R.id.activity_menu_button_clear_db);
-        clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteDatabase();
-            }
-        });
-        refresh = (Button) findViewById(R.id.activity_menu_button_refresh);
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateDatabase();
-            }
-        });
-        control = (Button) findViewById(R.id.activity_menu_button_control);
         control.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setTemperatureValues();
             }
         });
-        addNew = (Button) findViewById(R.id.activity_menu_button_add_new);
         addNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addNew();
             }
         });
-        String minDate = dbTemperature.getMinDate();
-        String maxDate = dbTemperature.getMaxDate();
-        minTemp.setText("min Date " + minDate);
-        maxTemp.setText("max Date " + maxDate);
-
-
+        updateDatabase();
     }
 
+    private void initializeInterfaceElements() {
+        save = (Button) findViewById(R.id.activity_menu_button_save);
+        graph = (Button) findViewById(R.id.activity_menu_button_show_graph);
+        control = (Button) findViewById(R.id.activity_menu_button_control);
+        addNew = (Button) findViewById(R.id.activity_menu_button_add_new);
+        current = (TextView) findViewById(R.id.activity_menu_text_curent_temp);
+        average = (TextView) findViewById(R.id.activity_menu_text_average);
+        averageToday = (TextView) findViewById(R.id.activity_menu_text_average_on_day);
+        isOn = (TextView) findViewById(R.id.activity_menu_text_is_active);
+    }
     private void updateDatabase() {
         DatabaseUpdater update = new DatabaseUpdater();
         update.execute();
 
-    }
-    private void deleteDatabase(){
-        DbTemperature db = new DbTemperature(getApplicationContext());
-        db.removeAll();
     }
     private void showGraph(){
         Intent intent = new Intent(MenuActivity.this,GraphActivity.class);
@@ -123,6 +105,31 @@ public class MenuActivity extends Activity {
         Intent intent = new Intent(MenuActivity.this,TemperatureControlActivity.class);
         startActivity(intent);
     }
+
+    private void setupDetails() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+        String averageTemp = dbTemperature.getAverageTemperatures();
+        String averageDay = dbTemperature.getAverageTemperaturesOnDay(currentDate);
+        String now = dbTemperature.getCurrentTemperature();
+        Calendar c = Calendar.getInstance();
+        String hour = String.valueOf(c.get(Calendar.HOUR_OF_DAY));
+        float planned = Float.parseFloat(dbPlan.getRecord(hour));
+        float tempNow = Float.parseFloat(now);
+        isOn.setText("OFF");
+        Log.i("Planned", String.valueOf(planned));
+        Log.i("now", now);
+        if (planned > tempNow) {
+            isOn.setText("ON");
+            isOn.setTextColor(Color.RED);
+        }
+        current.setText(now + " C");
+        average.setText(averageTemp + " C");
+        averageToday.setText(averageDay + " C");
+
+
+    }
+
     private class DatabaseUpdater extends AsyncTask<Void,Void,String>{
         ArrayList<String> planArrayList;
         @Override
@@ -137,14 +144,15 @@ public class MenuActivity extends Activity {
         @Override
         protected void onPostExecute(String results) {
             super.onPostExecute(results);
-            progressDialog.dismiss();
+            dismissProgressDialog();
+            setupDetails();
             Toast.makeText(getApplicationContext(),results,Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onCancelled(String s) {
             super.onCancelled(s);
-            progressDialog.dismiss();
+            dismissProgressDialog();
         }
 
         @Override
@@ -153,7 +161,7 @@ public class MenuActivity extends Activity {
             String data;
             String result = "No new data to fetch";
             try {
-                data = GetDataService.sendRequest(URL, Credentials.getToken(getApplicationContext()));
+                data = GetDataService.sendRequest(URL);
                 if(data != null) {
                     try {
                         Credentials.processJSONandInsertToDB(new JSONArray(data), dbTemperature);
@@ -171,11 +179,18 @@ public class MenuActivity extends Activity {
                     map.put(dataTable[0],dataTable[1]);
                 }
                 SendJsonService.sendJsonPostRequest(Variables.SERVER_BASE + Variables.SET_HOME_TEMP,map);
+                dbTemperature.getAllDates();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return result;
+        }
+
+        private void dismissProgressDialog() {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
         }
     }
 

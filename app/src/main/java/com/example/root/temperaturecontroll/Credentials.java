@@ -1,7 +1,5 @@
 package com.example.root.temperaturecontroll;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.root.temperaturecontroll.Database.DbTemperature;
@@ -16,32 +14,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.concurrent.TimeUnit;
 
 import static android.content.ContentValues.TAG;
 
 public class Credentials {
-    public static String getToken(Context context) {
-        Context activityContext = context.getApplicationContext();
-        SharedPreferences sharedPreferences = getSharedPreferences(activityContext);
-        String token = sharedPreferences.getString(Variables.ACCESS_TOKEN,null);
-        return token;
-    }
-
-    public static void setToken(Context context, String accessToken) {
-        Context activityContext = context.getApplicationContext();
-        SharedPreferences sharedPreferences = getSharedPreferences(activityContext);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(Variables.ACCESS_TOKEN, accessToken);
-        editor.apply();
-    }
-    private static SharedPreferences getSharedPreferences(Context appContext) {
-        return appContext.getSharedPreferences(Variables.ACCESS_TOKEN_NAME, Context.MODE_PRIVATE);
-    }
     public static void processJSONandInsertToDB(JSONArray jsonArray, DbTemperature dbTemperature) throws JSONException {
         if(jsonArray != null) {
+            Log.i(TAG, String.valueOf(jsonArray));
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Log.i(TAG, String.valueOf(jsonObject));
                 dbTemperature.insertRecord(jsonObject.getString("ID"),
                         jsonObject.getString("ROOM"),
                         jsonObject.getString("DATE"),
@@ -60,7 +42,7 @@ public class Credentials {
         if (httpURLConnection != null) {
         InputStream inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line = "";
+            String line;
         StringBuilder stringBuilder=  new StringBuilder();
         while((line = bufferedReader.readLine()) != null){
             stringBuilder.append(line).append("\n");

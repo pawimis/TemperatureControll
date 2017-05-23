@@ -1,4 +1,4 @@
-package com.example.root.temperaturecontroll.Activity;
+package com.example.root.temperaturecontroll.CustomUIElements;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,11 +12,9 @@ import android.view.View;
 
 
 public class MyCustomTemperaturePicker extends View {
+    private static final int MAX_SIZE = 250;
     Paint paint;
     int radius = 100;
-
-
-    private static final int MAX_SIZE = 250;
     public MyCustomTemperaturePicker(Context context) {
         super(context);
         getRootView().setBackgroundColor(Color.BLACK);
@@ -32,6 +30,7 @@ public class MyCustomTemperaturePicker extends View {
         super(context, attrs, defStyleAttr);
         init();
     }
+
 
     private void init(){
         paint = new Paint();
@@ -49,6 +48,8 @@ public class MyCustomTemperaturePicker extends View {
 
         int posX = (int) Math.pow(Math.abs(getWidth() / 2 - event.getX()), 2);
         int posY = (int) Math.pow(Math.abs(getHeight() / 2 - event.getY()), 2);
+        Log.i("POS X", String.valueOf(posX));
+        Log.i("POS Y", String.valueOf(posY));
         if(isInBounds(posX,posY)) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
@@ -65,18 +66,15 @@ public class MyCustomTemperaturePicker extends View {
                     break;
             }
         }
-        else
-            radius = MAX_SIZE;
     }
-    private boolean isInBounds(float x ,float y){
+
+    public boolean isInBounds(float x, float y) {
         int rad = (int) Math.sqrt(x + y);
         return (rad <= MAX_SIZE);
     }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.i("Width",String.valueOf(getWidth()));
-        Log.i("Height",String.valueOf(getHeight()));
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(getWidth()/2, getHeight()/2, MAX_SIZE, paint);
 
